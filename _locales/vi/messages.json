@@ -1,0 +1,20 @@
+{
+    "name": {
+        "message": "Truy Giá"
+    },
+    "description": {
+        "message": "Theo dõi lịch sử giá, thông báo khi có thay đổi."
+    },
+    "action_title": {
+        "message": "Thêm trang này vào Trình Theo Dõi"
+    },
+    "configs": {
+        "message": "Cấu hình"
+    },
+    "save": {
+        "message": "Lưu"
+    },
+    "updated": {
+        "message": "Đã cập nhật!"
+    }
+}

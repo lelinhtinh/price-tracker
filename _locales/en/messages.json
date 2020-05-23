@@ -1,0 +1,20 @@
+{
+    "name": {
+        "message": "Price Tracker"
+    },
+    "description": {
+        "message": "Track price history, notify when changes."
+    },
+    "action_title": {
+        "message": "Add this page to the Tracker"
+    },
+    "configs": {
+        "message": "Configs"
+    },
+    "save": {
+        "message": "Save"
+    },
+    "updated": {
+        "message": "Updated!"
+    }
+}

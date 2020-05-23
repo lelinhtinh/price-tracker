@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
+    <title data-i18n>name</title>
+
+    <link rel="stylesheet" href="../css/vendor/chota.min.css">
+    <link rel="stylesheet" href="../css/options.css">
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-left">
+                    <strong class="brand" data-i18n>name</strong>
+                </div>
+                <div class="nav-right">
+                    <a id="themeSwitch" href="#">🌙</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <form>
+            <label for="hostConfigs" data-i18n>configs</label>
+            <textarea rows="7" placeholder="example.com|.price" id="hostConfigs"></textarea>
+            <div class="clearfix">
+                <div class="float-left">
+                    <button class="button-status d-none" id="statusBtn" data-i18n>updated</button>
+                </div>
+                <div class="float-right">
+                    <button type="submit" class="button-primary" id="submitBtn" data-i18n>save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+<script src="../js/i18n.js"></script>
+<script src="../js/options.js"></script>
+
+</html>

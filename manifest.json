@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "__MSG_name__",
+    "description": "__MSG_description__",
+    "version": "0.1.0",
+    "homepage_url": "https://github.com/lelinhtinh",
+    "icons": {
+        "64": "icons/graphic.png"
+    },
+    "permissions": [
+        "alarms",
+        "webRequest",
+        "webRequestBlocking",
+        "tabs",
+        "webNavigation",
+        "notifications",
+        "storage",
+        "*://*/*"
+    ],
+    "background": {
+        "scripts": [
+            "src/js/background.js"
+        ],
+        "persistent": true
+    },
+    "options_page": "src/view/options.html",
+    "browser_action": {
+        "default_title": "__MSG_action_title__"
+    },
+    "default_locale": "en"
+}
