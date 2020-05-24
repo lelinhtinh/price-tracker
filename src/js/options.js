@@ -20,14 +20,14 @@ async function setConfigs(add, force = false) {
 
     if (force) {
         data = add.filter((item, index, arr) => {
-            if (Object.keys(item).length !== 3) return false;
+            if (Object.keys(item).length < 3) return false;
             if (!item.url || !item.selector || !item.title) return false;
 
             return arr.findIndex((curr) => curr.url === item.url) === index;
         });
     } else {
         data = await getConfigs();
-        if (data.length) data = data.filter((item) => item.url !== add.url);
+        if (Array.isArray(data) && data.length) data = data.filter((item) => item.url !== add.url);
         data.push(add);
     }
 
@@ -78,7 +78,7 @@ function removeConfigs() {
     });
 
     chrome.storage.onChanged.addListener((changes) => {
-        const newValue = changes.trackingList ? (changes.trackingList.newValue || []) : [];
+        const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
         $listConfigs.value = JSON.stringify(newValue);
     });
 
