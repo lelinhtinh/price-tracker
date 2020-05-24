@@ -1,4 +1,6 @@
-(function (global) {
+/* global DomInspector */
+
+(function () {
     const inspector = new DomInspector();
 
     function saveSelector(sel) {
@@ -27,6 +29,7 @@
         let content;
         try {
             content = document.querySelector(sel).textContent.trim();
+        // eslint-disable-next-line no-empty
         } catch (error) {}
         if (!content) return;
 
@@ -71,4 +74,4 @@
 
     inspector.enable();
     document.addEventListener('click', clickDom);
-})(window);
+})();

@@ -113,3 +113,7 @@ details svg {
 details summary::-webkit-details-marker {
     display: none;
 }
+
+.button.clear {
+    padding-left: 0;
+}

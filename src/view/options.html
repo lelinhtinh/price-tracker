@@ -25,7 +25,7 @@
     <div class="container mt-5">
         <details class="card">
             <summary>
-                <label for="hostConfigs" class="summary-title" data-i18n>configs</label>
+                <label for="listConfigs" class="summary-title" data-i18n>configs</label>
                 <div class="summary-chevron-up">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -34,14 +34,14 @@
                     </svg>
                 </div>
             </summary>
-            <form class="mb-0 summary-content">
-                <textarea rows="7" id="hostConfigs"></textarea>
+            <form class="mb-0 summary-content" id="formConfigs">
+                <textarea rows="7" id="listConfigs"></textarea>
                 <div class="row mt-2">
-                    <div class="col mb-0 is-left is-hidden">
-                        <button class="button-status d-none" id="statusBtn" data-i18n>updated</button>
+                    <div class="col mb-0 is-left is-hidden" id="statusWrap">
+                        <button class="button clear" data-i18n>updated</button>
                     </div>
                     <div class="col mb-0 is-right">
-                        <button type="submit" class="button-primary" id="submitBtn" data-i18n>save</button>
+                        <button type="submit" class="button primary" id="submitBtn" data-i18n>save</button>
                     </div>
                 </div>
                 <div class="summary-chevron-down">
