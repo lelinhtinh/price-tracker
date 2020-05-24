@@ -16,5 +16,11 @@
     },
     "updated": {
         "message": "Đã cập nhật!"
+    },
+    "tracking": {
+        "message": "Danh sách theo dõi"
+    },
+    "preview": {
+        "message": "Đây có đúng là giá tiền bạn cần theo dõi?"
     }
 }

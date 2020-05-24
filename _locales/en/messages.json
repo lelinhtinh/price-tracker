@@ -16,5 +16,11 @@
     },
     "updated": {
         "message": "Updated!"
+    },
+    "tracking": {
+        "message": "Tracking List"
+    },
+    "preview": {
+        "message": "Is this the correct price you want to track?"
     }
 }

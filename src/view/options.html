@@ -22,19 +22,37 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <form>
-            <label for="hostConfigs" data-i18n>configs</label>
-            <textarea rows="7" placeholder="example.com|.price" id="hostConfigs"></textarea>
-            <div class="clearfix">
-                <div class="float-left">
-                    <button class="button-status d-none" id="statusBtn" data-i18n>updated</button>
+    <div class="container mt-5">
+        <details class="card">
+            <summary>
+                <label for="hostConfigs" class="summary-title" data-i18n>configs</label>
+                <div class="summary-chevron-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-chevron-down">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
                 </div>
-                <div class="float-right">
-                    <button type="submit" class="button-primary" id="submitBtn" data-i18n>save</button>
+            </summary>
+            <form class="mb-0 summary-content">
+                <textarea rows="7" id="hostConfigs"></textarea>
+                <div class="row mt-2">
+                    <div class="col mb-0 is-left is-hidden">
+                        <button class="button-status d-none" id="statusBtn" data-i18n>updated</button>
+                    </div>
+                    <div class="col mb-0 is-right">
+                        <button type="submit" class="button-primary" id="submitBtn" data-i18n>save</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+                <div class="summary-chevron-down">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-chevron-up">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                </div>
+            </form>
+        </details>
     </div>
 </body>
 <script src="../js/i18n.js"></script>

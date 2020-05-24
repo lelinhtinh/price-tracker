@@ -12,6 +12,7 @@
         "webRequest",
         "webRequestBlocking",
         "tabs",
+        "activeTab",
         "webNavigation",
         "notifications",
         "storage",

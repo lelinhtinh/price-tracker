@@ -1,8 +1,15 @@
+:root {
+    --bg-color: #edf2f7;
+    --bg-secondary-color: #fff;
+    --font-color: #4a5568;
+}
+
 body.dark {
     --bg-color: #000;
     --bg-secondary-color: #262626;
     --font-color: #f5f5f5;
     --color-grey: #bbb;
+    --color-lightGrey: #444;
     --color-darkGrey: #888;
     --color-primary: #17c16f;
     --color-error: #ea4f4f;
@@ -13,6 +20,96 @@ body.dark {
     margin: 0 auto;
 }
 
+.nav .brand,
+.nav a {
+    padding: 0;
+    user-select: none;
+}
+
 textarea {
+    box-sizing: border-box;
+    resize: vertical;
+    background: var(--bg-color);
+    color: var(--color-darkGrey);
+}
+
+.mt-1 {
+    margin-top: .5rem;
+}
+
+.mt-2 {
+    margin-top: 1rem;
+}
+
+.mt-3 {
+    margin-top: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.mt-5 {
+    margin-top: 3rem;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.card {
+    background: var(--bg-secondary-color) !important;
+}
+
+details {
+    position: relative;
+    width: 100%;
+}
+
+details .summary-title {
+    user-select: none;
+    font-size: 1.25em;
+}
+
+details:hover {
+    cursor: pointer;
+}
+
+details .summary-content {
+    cursor: default;
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+details summary {
+    padding: .75rem 0;
+}
+
+details summary:focus {
+    outline: none;
+}
+
+details summary:hover .summary-chevron-up svg {
+    opacity: 1;
+}
+
+details .summary-chevron-up svg {
+    opacity: .5;
+}
+
+details .summary-chevron-up,
+details .summary-chevron-down {
+    pointer-events: none;
+    position: absolute;
+    top: 2.2rem;
+    right: 2rem;
     background: var(--bg-secondary-color);
+}
+
+details svg {
+    display: block;
+}
+
+details summary::-webkit-details-marker {
+    display: none;
 }
