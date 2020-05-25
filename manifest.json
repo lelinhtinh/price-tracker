@@ -19,9 +19,7 @@
         "*://*/*"
     ],
     "background": {
-        "scripts": [
-            "src/js/background.js"
-        ],
+        "page": "src/view/background.html",
         "persistent": true
     },
     "options_page": "src/view/options.html",

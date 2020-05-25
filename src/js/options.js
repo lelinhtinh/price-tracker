@@ -1,50 +1,4 @@
-function notify(status, title, message) {
-    chrome.notifications.create({
-        type: 'basic',
-        iconUrl: chrome.runtime.getURL(`icons/${status}.png`),
-        title: title,
-        message: message,
-    });
-}
-
-function getConfigs() {
-    return new Promise((resolve) => {
-        chrome.storage.local.get(['trackingList'], (result) => {
-            resolve(result.trackingList ? result.trackingList : []);
-        });
-    });
-}
-
-async function setConfigs(add, force = false) {
-    let data;
-
-    if (force) {
-        data = add.filter((item, index, arr) => {
-            if (Object.keys(item).length < 3) return false;
-            if (!item.url || !item.selector || !item.title) return false;
-
-            return arr.findIndex((curr) => curr.url === item.url) === index;
-        });
-    } else {
-        data = await getConfigs();
-        if (Array.isArray(data) && data.length) data = data.filter((item) => item.url !== add.url);
-        data.push(add);
-    }
-
-    return new Promise((resolve) => {
-        chrome.storage.local.set({ trackingList: data }, () => {
-            resolve(data);
-        });
-    });
-}
-
-function removeConfigs() {
-    return new Promise((resolve) => {
-        chrome.storage.local.remove(['trackingList'], () => {
-            resolve();
-        });
-    });
-}
+import * as utils from './utils.js';
 
 (async function () {
     const $formConfigs = document.querySelector('#formConfigs');
@@ -63,7 +17,7 @@ function removeConfigs() {
 
         let data = $listConfigs.value.trim();
         if (data === '') {
-            await removeConfigs();
+            await utils.cleanList();
         } else {
             try {
                 data = JSON.parse(data);
@@ -71,7 +25,7 @@ function removeConfigs() {
             } catch (error) {}
 
             if (!Array.isArray(data)) return;
-            await setConfigs(data, true);
+            await utils.setItem(data, true);
         }
 
         updated();
@@ -82,6 +36,6 @@ function removeConfigs() {
         $listConfigs.value = JSON.stringify(newValue);
     });
 
-    const currentConfigs = await getConfigs();
+    const currentConfigs = await utils.getAllList();
     $listConfigs.value = JSON.stringify(currentConfigs);
 })();

@@ -1,50 +1,4 @@
-function notify(status, title, message) {
-    chrome.notifications.create({
-        type: 'basic',
-        iconUrl: chrome.runtime.getURL(`icons/${status}.png`),
-        title: title,
-        message: message,
-    });
-}
-
-function getConfigs() {
-    return new Promise((resolve) => {
-        chrome.storage.local.get(['trackingList'], (result) => {
-            resolve(result.trackingList ? result.trackingList : []);
-        });
-    });
-}
-
-async function setConfigs(add, force = false) {
-    let data;
-
-    if (force) {
-        data = add.filter((item, index, arr) => {
-            if (Object.keys(item).length < 3) return false;
-            if (!item.url || !item.selector || !item.title) return false;
-
-            return arr.findIndex((curr) => curr.url === item.url) === index;
-        });
-    } else {
-        data = await getConfigs();
-        if (Array.isArray(data) && data.length) data = data.filter((item) => item.url !== add.url);
-        data.push(add);
-    }
-
-    return new Promise((resolve) => {
-        chrome.storage.local.set({ trackingList: data }, () => {
-            resolve(data);
-        });
-    });
-}
-
-function removeConfigs() {
-    return new Promise((resolve) => {
-        chrome.storage.local.remove(['trackingList'], () => {
-            resolve();
-        });
-    });
-}
+import * as utils from './utils.js';
 
 let matchUrls = ['https://github.com/lelinhtinh/*'];
 
@@ -77,47 +31,32 @@ chrome.browserAction.onClicked.addListener(() => {
 
 chrome.runtime.onMessage.addListener(async (message) => {
     if (message.action !== 'tracking-selector') return;
-    await setConfigs(message.data);
-    notify('ok', message.data.title, message.data.url);
+    await utils.setItem(message.data);
+    utils.notify('ok', message.data.title, message.data.url);
 });
 
 chrome.storage.onChanged.addListener((changes) => {
     const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
-    taskFilter(newValue);
+    if(newValue.length) taskFilter(newValue);
 });
 
-function getAllTasks() {
-    return new Promise((resolve) => {
-        chrome.alarms.getAll((tasks) => {
-            resolve(tasks);
-        });
-    });
-}
+/**
+ *
+ * @param {utils.Item[]} currList
+ */
+async function taskFilter(currList) {
+    let allTasks = await utils.getAllTasks();
+    allTasks = allTasks.filter((task) => currList.findIndex(item => task.name === item.url) === -1);
+    list.forEach(utils.createTask);
 
-function createTask(item) {
-    chrome.alarms.create(item.url, {
-        delayInMinutes: 1,
-        periodInMinutes: 1,
-    });
-}
-
-function removeTask(task) {
-    chrome.alarms.clear(task.name);
-}
-
-async function taskFilter(list) {
-    let allTasks = await getAllTasks();
-    list = list.filter((item) => !allTasks.includes(item.url));
-    list.forEach(createTask);
-
-    allTasks = await getAllTasks();
-    list = await getConfigs();
+    allTasks = await utils.getAllTasks();
+    list = await utils.getAllList();
     let unused = allTasks.filter((task) => list.find((item) => item.url === task.name));
-    unused.forEach(removeTask);
+    unused.forEach(utils.removeTask);
 }
 
 async function fireTask(task) {
-    const trackingList = await getConfigs();
+    const trackingList = await utils.getAllList();
     const config = trackingList.find((item) => item.url === task.name);
 
     try {
@@ -139,7 +78,7 @@ async function fireTask(task) {
         });
 
         config.history = history;
-        setConfigs(config);
+        utils.setItem(config);
         // eslint-disable-next-line no-empty
     } catch (error) {}
 }
@@ -147,3 +86,18 @@ async function fireTask(task) {
 chrome.alarms.onAlarm.addListener((task) => {
     fireTask(task);
 });
+
+function appendTask() {
+
+}
+
+(async function () {
+    let allTasks = await utils.getAllTasks();
+    let allList = await utils.getAllList();
+
+    if (!allTasks.length && !allList.length) return;
+    if (allTasks.length && !allList.length) {
+        await utils.removeTask
+    }
+    console.log(allTasks, list);
+})();
