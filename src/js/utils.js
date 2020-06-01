@@ -167,11 +167,11 @@ export function getAllTasks() {
 }
 
 /**
- * @param {string} itemUrl
+ * @param {Item} item
  * @returns {void}
  */
-export function createTask(itemUrl) {
-    chrome.alarms.create(itemUrl, {
+export function createTask(item) {
+    chrome.alarms.create(item.url, {
         delayInMinutes: 0.1,
         periodInMinutes: 0.5,
     });

@@ -37,22 +37,17 @@ chrome.runtime.onMessage.addListener(async (message) => {
 
 chrome.storage.onChanged.addListener((changes) => {
     const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
-    if(newValue.length) taskFilter(newValue);
+    console.log(newValue);
+    if (newValue.length) appendTask(newValue);
 });
 
 /**
- *
  * @param {utils.Item[]} currList
  */
-async function taskFilter(currList) {
+async function appendTask(currList) {
     let allTasks = await utils.getAllTasks();
-    allTasks = allTasks.filter((task) => currList.findIndex(item => task.name === item.url) === -1);
-    list.forEach(utils.createTask);
-
-    allTasks = await utils.getAllTasks();
-    list = await utils.getAllList();
-    let unused = allTasks.filter((task) => list.find((item) => item.url === task.name));
-    unused.forEach(utils.removeTask);
+    allTasks = allTasks.filter((task) => currList.findIndex((item) => task.name === item.url) === -1);
+    currList.forEach(utils.createTask);
 }
 
 async function fireTask(task) {
@@ -87,17 +82,15 @@ chrome.alarms.onAlarm.addListener((task) => {
     fireTask(task);
 });
 
-function appendTask() {
-
-}
-
 (async function () {
     let allTasks = await utils.getAllTasks();
     let allList = await utils.getAllList();
 
     if (!allTasks.length && !allList.length) return;
     if (allTasks.length && !allList.length) {
-        await utils.removeTask
+        await utils.cleanTask();
     }
-    console.log(allTasks, list);
+
+    console.log(allTasks, allList);
+    allList.forEach(utils.createTask);
 })();

@@ -6,7 +6,10 @@
         "message": "Theo dõi lịch sử giá, thông báo khi có thay đổi."
     },
     "action_title": {
-        "message": "Thêm trang này vào Trình Theo Dõi"
+        "message": "Thêm trang này vào Truy Giá"
+    },
+    "listing": {
+        "message": "Danh sách theo dõi"
     },
     "configs": {
         "message": "Cấu hình"

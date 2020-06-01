@@ -6,7 +6,10 @@
         "message": "Track price history, notify when changes."
     },
     "action_title": {
-        "message": "Add this page to the Tracker"
+        "message": "Add this page to Price Tracker"
+    },
+    "listing": {
+        "message": "Watchlist"
     },
     "configs": {
         "message": "Configs"
