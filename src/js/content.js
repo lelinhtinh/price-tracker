@@ -3,7 +3,7 @@
 (function() {
     const inspector = new DomInspector();
 
-    function saveSelector(sel) {
+    function saveSelector(sel, price) {
         let url = document.querySelector('meta[property="og:url"],meta[name="og:url"]');
         url = url === null ? location.href : url.getAttribute('content');
 
@@ -16,6 +16,12 @@
                 url: url,
                 selector: sel,
                 title: title,
+                history: [
+                    {
+                        price: price,
+                        time: new Date().getTime(),
+                    },
+                ],
             },
         });
     }
@@ -50,7 +56,7 @@
         }
 
         if (confirm(chrome.i18n.getMessage('preview') + `\n"${price}"`)) {
-            saveSelector(sel);
+            saveSelector(sel, price);
 
             document.removeEventListener('click', clickDom);
             inspector.destroy();
