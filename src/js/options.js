@@ -25,7 +25,7 @@ import * as utils from './utils.js';
             } catch (error) {}
 
             if (!Array.isArray(data)) return;
-            await utils.setItem(data, true);
+            await utils.setList(data);
         }
 
         updated();

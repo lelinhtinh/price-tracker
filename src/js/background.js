@@ -37,50 +37,21 @@ chrome.runtime.onMessage.addListener(async (message) => {
 
 chrome.storage.onChanged.addListener((changes) => {
     const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
-    console.log(newValue);
-    if (newValue.length) appendTask(newValue);
+    if (newValue.length) updateTask(newValue);
 });
 
 /**
  * @param {utils.Item[]} currList
  */
-async function appendTask(currList) {
+async function updateTask(currList) {
     let allTasks = await utils.getAllTasks();
-    allTasks = allTasks.filter((task) => currList.findIndex((item) => task.name === item.url) === -1);
+    allTasks.forEach((task) => {
+        if (currList.findIndex((item) => task.name === item.url) !== -1) utils.removeTask(task);
+    });
     currList.forEach(utils.createTask);
 }
 
-async function fireTask(task) {
-    const trackingList = await utils.getAllList();
-    const config = trackingList.find((item) => item.url === task.name);
-
-    try {
-        let res = await fetch(config.url);
-        res = await res.text();
-        const doc = new DOMParser().parseFromString(res, 'text/html');
-
-        let price = doc.querySelector(config.selector);
-        if (price === null) return;
-
-        price = price.textContent.trim();
-        price = price.replace(/\D/g, '');
-
-        console.log(price);
-        let history = config.history || [];
-        history.push({
-            price: price,
-            time: task.scheduledTime,
-        });
-
-        config.history = history;
-        utils.setItem(config);
-        // eslint-disable-next-line no-empty
-    } catch (error) {}
-}
-
-chrome.alarms.onAlarm.addListener((task) => {
-    fireTask(task);
-});
+chrome.alarms.onAlarm.addListener(utils.fireTask);
 
 (async function () {
     let allTasks = await utils.getAllTasks();
