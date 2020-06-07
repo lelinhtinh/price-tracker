@@ -6,6 +6,7 @@
     <title data-i18n>name</title>
 
     <link rel="stylesheet" href="../css/vendor/chota.min.css">
+    <link rel="stylesheet" href="../css/vendor/hint.base.min.css">
     <link rel="stylesheet" href="../css/options.css">
 </head>
 
@@ -14,7 +15,7 @@
         <nav class="nav">
             <div class="container">
                 <div class="nav-left">
-                    <strong class="brand" data-i18n>name</strong>
+                    <span class="brand" data-i18n>tracking</span>
                 </div>
                 <div class="nav-right">
                     <a id="themeSwitch" href="#">🌙</a>
@@ -24,14 +25,7 @@
     </header>
     <div class="container mt-5">
         <div class="card">
-            <header>
-                <h4>Card title</h4>
-            </header>
-            <p>A nisi ullam ... cupiditate?</p>
-            <footer class="is-right">
-                <a class="button primary">Submit</a>
-                <a class="button">Cancel</a>
-            </footer>
+            <div id="trackingList"></div>
         </div>
         <details class="card mt-5">
             <summary>
@@ -65,7 +59,6 @@
         </details>
     </div>
 </body>
-<script src="/src/js/i18n.js"></script>
 <script type="module" src="/src/js/options.js"></script>
 
 </html>
