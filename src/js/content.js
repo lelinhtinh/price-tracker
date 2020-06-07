@@ -25,15 +25,31 @@
         if ($inspector !== null) $inspector.remove();
     }
 
-    function preview(sel) {
-        let content;
-        try {
-            content = document.querySelector(sel).textContent.trim();
-        // eslint-disable-next-line no-empty
-        } catch (error) {}
-        if (!content) return;
+    async function preview(sel) {
+        let price;
 
-        if (confirm(chrome.i18n.getMessage('preview') + `\n"${content}"`)) {
+        try {
+            let res = await fetch(location.href);
+            res = await res.text();
+            const doc = new DOMParser().parseFromString(res, 'text/html');
+
+            let content = doc.querySelector(sel);
+            if (content === null) {
+                alert(chrome.i18n.getMessage('not_found'));
+                return;
+            }
+
+            content = content.textContent.trim();
+            price = content.replace(/\D/g, '');
+            // eslint-disable-next-line no-empty
+        } catch (error) {}
+
+        if (!price) {
+            alert(chrome.i18n.getMessage('not_found'));
+            return;
+        }
+
+        if (confirm(chrome.i18n.getMessage('preview') + `\n"${price}"`)) {
             saveSelector(sel);
 
             document.removeEventListener('click', clickDom);
@@ -74,4 +90,17 @@
 
     inspector.enable();
     document.addEventListener('click', clickDom);
+
+    function destroyInspector(e) {
+        e.preventDefault();
+
+        document.removeEventListener('contextmenu', destroyInspector);
+        if (!inspector) return;
+
+        document.removeEventListener('click', clickDom);
+        inspector.destroy();
+        cleanInspector();
+    }
+
+    document.addEventListener('contextmenu', destroyInspector);
 })();
