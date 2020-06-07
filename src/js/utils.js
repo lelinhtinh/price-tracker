@@ -76,7 +76,7 @@ export async function verifyList(list) {
 
     return list.filter((item, index, arr) => {
         if (!verifyItem(item)) return false;
-        return arr.findIndex((curr) => curr.url === item.url) === index;
+        return arr.findIndex(curr => curr.url === item.url) === index;
     });
 }
 
@@ -84,8 +84,8 @@ export async function verifyList(list) {
  * @returns {Item[]}
  */
 export function getAllList() {
-    return new Promise((resolve) => {
-        chrome.storage.local.get(['trackingList'], (result) => {
+    return new Promise(resolve => {
+        chrome.storage.local.get(['trackingList'], result => {
             resolve(result.trackingList ? result.trackingList : []);
         });
     });
@@ -96,7 +96,7 @@ export function getAllList() {
  * @returns {Item[]}
  */
 export function setList(data) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.storage.local.set({ trackingList: data }, () => {
             resolve(data);
         });
@@ -113,7 +113,7 @@ export async function setItem(add, force = false) {
     add = verifyItem(add);
     if (!add) return;
 
-    if (allList.length) allList = allList.filter((item) => item.url !== add.url);
+    if (allList.length) allList = allList.filter(item => item.url !== add.url);
     allList.push(add);
 
     return await setList(allList);
@@ -124,13 +124,13 @@ export async function setItem(add, force = false) {
  * @returns {Item}
  */
 export function getItem(item) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.storage.local.get(
             ['trackingList'],
             /** @param {Result} result */
-            (result) => {
+            result => {
                 if (!result || !result.trackingList || !result.trackingList.length) resolve(null);
-                resolve(result.trackingList.find((temp) => temp.url === item.url));
+                resolve(result.trackingList.find(temp => temp.url === item.url));
             }
         );
     });
@@ -141,14 +141,14 @@ export function getItem(item) {
  * @returns {Item}
  */
 export function removeItem(item) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.storage.local.get(
             ['trackingList'],
             /** @param {Result} result */
-            async (result) => {
+            async result => {
                 if (!result || !result.trackingList || !result.trackingList.length) resolve();
 
-                const index = result.trackingList.findIndex((temp) => temp.url === item.url);
+                const index = result.trackingList.findIndex(temp => temp.url === item.url);
                 if (index === -1) resolve();
 
                 result.trackingList.splice(index, 1);
@@ -162,7 +162,7 @@ export function removeItem(item) {
  * @returns {void}
  */
 export function cleanList() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.storage.local.remove(['trackingList'], () => {
             resolve();
         });
@@ -180,8 +180,8 @@ export function cleanList() {
  * @returns {Task[]}
  */
 export function getAllTasks() {
-    return new Promise((resolve) => {
-        chrome.alarms.getAll((tasks) => {
+    return new Promise(resolve => {
+        chrome.alarms.getAll(tasks => {
             resolve(tasks);
         });
     });
@@ -203,8 +203,8 @@ export function createTask(item) {
  * @returns {Task}
  */
 export function getTask(task) {
-    return new Promise((resolve) => {
-        chrome.alarms.get(task.name, (task) => {
+    return new Promise(resolve => {
+        chrome.alarms.get(task.name, task => {
             resolve(task);
         });
     });
@@ -215,7 +215,7 @@ export function getTask(task) {
  * @returns {void}
  */
 export function removeTask(task) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.alarms.clear(task.name, () => {
             resolve();
         });
@@ -226,7 +226,7 @@ export function removeTask(task) {
  * @returns {void}
  */
 export function cleanTask() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         chrome.alarms.clearAll(() => {
             resolve();
         });
@@ -238,7 +238,7 @@ export function cleanTask() {
  */
 export async function fireTask(task) {
     const trackingList = await getAllList();
-    const config = trackingList.find((item) => item.url === task.name);
+    const config = trackingList.find(item => item.url === task.name);
 
     try {
         let res = await fetch(config.url);
@@ -264,4 +264,18 @@ export async function fireTask(task) {
         await setItem(config);
         // eslint-disable-next-line no-empty
     } catch (error) {}
+}
+
+/**
+ * @param {number} price
+ */
+export function vnd(price) {
+    return Number(price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+}
+
+/**
+ * @param {number} timestamp
+ */
+export function dt(timestamp) {
+    return new Date(Number(timestamp)).toLocaleString();
 }
