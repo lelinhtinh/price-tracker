@@ -25,5 +25,8 @@
     },
     "preview": {
         "message": "Đây có đúng là giá tiền bạn cần theo dõi?"
+    },
+    "not_found": {
+        "message": "Không tìm thấy giá tiền!"
     }
 }

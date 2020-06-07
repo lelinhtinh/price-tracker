@@ -25,5 +25,8 @@
     },
     "preview": {
         "message": "Is this the correct price you want to track?"
+    },
+    "not_found": {
+        "message": "Price is not found!"
     }
 }
