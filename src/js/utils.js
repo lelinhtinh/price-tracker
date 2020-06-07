@@ -1,4 +1,4 @@
-const TASK_DELAY = 1;
+const TASK_DELAY = 30;
 
 /**
  * @param {'empty'|'ok'|'error'|'plus'|'minus'} status
@@ -241,7 +241,9 @@ export async function fireTask(task) {
     const config = trackingList.find(item => item.url === task.name);
 
     try {
-        let res = await fetch(config.url);
+        let res = await fetch(config.url, {
+            credentials: 'same-origin',
+        });
         res = await res.text();
         const doc = new DOMParser().parseFromString(res, 'text/html');
 
