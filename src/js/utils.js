@@ -1,3 +1,5 @@
+const TASK_DELAY = 1;
+
 /**
  * @param {'empty'|'ok'|'error'|'plus'|'minus'} status
  * @param {string} title
@@ -18,8 +20,17 @@ export function notify(status, title, message) {
  * @returns {boolean}
  */
 export function hasContent(str) {
-    if (!(typeof str !== 'string')) return false;
+    if (typeof str !== 'string') return false;
     return str.trim() !== '';
+}
+
+/**
+ * @param {array|object} obj
+ * @returns {void}
+ */
+export function log(obj, name = null) {
+    if (typeof obj !== 'object') console.log(Object.create(obj), name ? name : typeof obj);
+    console.log(Object.create(obj), name ? name : 'object');
 }
 
 /**
@@ -45,7 +56,7 @@ export function hasContent(str) {
  * @param {Item} item
  * @returns {Item|null}
  */
-export async function verifyItem(item) {
+export function verifyItem(item) {
     if (Object.keys(item).length !== (item.history ? 4 : 3)) return null;
     if (!hasContent(item.selector)) return null;
     if (!hasContent(item.title)) return null;
@@ -81,57 +92,67 @@ export function getAllList() {
 }
 
 /**
+ * @param {Item[]} data
+ * @returns {Item[]}
+ */
+export function setList(data) {
+    return new Promise((resolve) => {
+        chrome.storage.local.set({ trackingList: data }, () => {
+            resolve(data);
+        });
+    });
+}
+
+/**
  * @param {Item} add
  * @param {boolean} [force] false
  * @returns {Item[]}
  */
 export async function setItem(add, force = false) {
     let allList = force ? [] : await getAllList();
-    add = await verifyItem(add);
+    add = verifyItem(add);
     if (!add) return;
 
     if (allList.length) allList = allList.filter((item) => item.url !== add.url);
     allList.push(add);
 
-    return new Promise((resolve) => {
-        chrome.storage.local.set({ trackingList: allList }, () => {
-            resolve(allList);
-        });
-    });
+    return await setList(allList);
 }
 
 /**
- * @param {string} itemUrl
+ * @param {Item} item
  * @returns {Item}
  */
-export function getItem(itemUrl) {
+export function getItem(item) {
     return new Promise((resolve) => {
         chrome.storage.local.get(
             ['trackingList'],
             /** @param {Result} result */
             (result) => {
                 if (!result || !result.trackingList || !result.trackingList.length) resolve(null);
-                resolve(result.trackingList.find((item) => item.url === itemUrl));
+                resolve(result.trackingList.find((temp) => temp.url === item.url));
             }
         );
     });
 }
 
 /**
- * @param {string} itemUrl
+ * @param {Item} item
  * @returns {Item}
  */
-export function removeItem(itemUrl) {
+export function removeItem(item) {
     return new Promise((resolve) => {
         chrome.storage.local.get(
             ['trackingList'],
             /** @param {Result} result */
-            (result) => {
+            async (result) => {
                 if (!result || !result.trackingList || !result.trackingList.length) resolve();
-                const index = result.trackingList.findIndex((item) => item.url === itemUrl);
+
+                const index = result.trackingList.findIndex((temp) => temp.url === item.url);
                 if (index === -1) resolve();
+
                 result.trackingList.splice(index, 1);
-                resolve();
+                resolve(await setList(result.trackingList));
             }
         );
     });
@@ -172,30 +193,30 @@ export function getAllTasks() {
  */
 export function createTask(item) {
     chrome.alarms.create(item.url, {
-        delayInMinutes: 0.1,
-        periodInMinutes: 0.5,
+        delayInMinutes: TASK_DELAY,
+        periodInMinutes: TASK_DELAY,
     });
 }
 
 /**
- * @param {string} taskName
+ * @param {Task} task
  * @returns {Task}
  */
-export function getTask(taskName) {
+export function getTask(task) {
     return new Promise((resolve) => {
-        chrome.alarms.get(taskName, (task) => {
+        chrome.alarms.get(task.name, (task) => {
             resolve(task);
         });
     });
 }
 
 /**
- * @param {string} taskName
+ * @param {Task} task
  * @returns {void}
  */
-export function removeTask(taskName) {
+export function removeTask(task) {
     return new Promise((resolve) => {
-        chrome.alarms.clear(taskName, () => {
+        chrome.alarms.clear(task.name, () => {
             resolve();
         });
     });
@@ -210,4 +231,37 @@ export function cleanTask() {
             resolve();
         });
     });
+}
+
+/**
+ * @param {Task} task
+ */
+export async function fireTask(task) {
+    const trackingList = await getAllList();
+    const config = trackingList.find((item) => item.url === task.name);
+
+    try {
+        let res = await fetch(config.url);
+        res = await res.text();
+        const doc = new DOMParser().parseFromString(res, 'text/html');
+
+        let price = doc.querySelector(config.selector);
+        if (price === null) return;
+
+        price = price.textContent.trim();
+        price = price.replace(/\D/g, '');
+
+        let history = config.history || [];
+        const lastPrice = history[history.length - 1];
+
+        if (!lastPrice || lastPrice.price !== price)
+            history.push({
+                price: price,
+                time: task.scheduledTime,
+            });
+
+        config.history = history;
+        await setItem(config);
+        // eslint-disable-next-line no-empty
+    } catch (error) {}
 }
