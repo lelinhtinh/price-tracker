@@ -260,6 +260,8 @@ export async function fireTask(task) {
                 time: task.scheduledTime,
             });
 
+        if (history.length > 4) history = history.slice(history.length - 4);
+
         config.history = history;
         await setItem(config);
         // eslint-disable-next-line no-empty
