@@ -153,3 +153,7 @@ details summary::-webkit-details-marker {
 #trackingList > .row .button:hover {
     opacity: 1;
 }
+
+.button svg {
+    pointer-events: none;
+}

@@ -19,6 +19,23 @@ $themeSwitch.addEventListener('click', e => {
         : ((el.innerHTML = '🌙'), bodyClass.add('dark'));
 });
 
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('delete-item')) {
+        utils.removeItem({
+            url: e.target.dataset.url,
+        });
+        utils.removeTask({
+            name: e.target.dataset.url,
+        });
+        e.target.closest('.row').remove();
+    } else if (e.target.classList.contains('refresh-item')) {
+        utils.fireTask({
+            name: e.target.dataset.url,
+            scheduledTime: new Date().getTime(),
+        });
+    }
+});
+
 const icons = {
     refresh:
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-ccw"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>',
@@ -122,15 +139,18 @@ function renderTrackingList(list) {
         updated();
     });
 
-    chrome.storage.onChanged.addListener(changes => {
-        const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
-        $listConfigs.value = JSON.stringify(newValue);
+    chrome.storage.onChanged.addListener(async changes => {
+        if (!changes.trackingList) return;
 
+        let newValue = changes.trackingList.newValue || [];
+        const oldValue = changes.trackingList.oldValue || [];
+        if (!newValue.length && oldValue.length > newValue) newValue = await utils.getAllList();
+
+        $listConfigs.value = JSON.stringify(newValue);
         renderTrackingList(newValue);
     });
 
     const currentConfigs = await utils.getAllList();
     $listConfigs.value = JSON.stringify(currentConfigs);
-
     renderTrackingList(currentConfigs);
 })();
