@@ -108,7 +108,7 @@ function renderTrackingList(list) {
     });
 }
 
-(async function() {
+(async function () {
     const $formConfigs = document.querySelector('#formConfigs');
     const $listConfigs = document.querySelector('#listConfigs');
     const $statusWrap = document.querySelector('#statusWrap');

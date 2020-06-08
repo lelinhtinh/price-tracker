@@ -1,6 +1,6 @@
 /* global DomInspector */
 
-(function() {
+(function () {
     const inspector = new DomInspector();
 
     function saveSelector(sel, price) {

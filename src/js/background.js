@@ -53,7 +53,7 @@ async function updateTask(currList) {
 
 chrome.alarms.onAlarm.addListener(utils.fireTask);
 
-(async function() {
+(async function () {
     let allTasks = await utils.getAllTasks();
     let allList = await utils.getAllList();
 
