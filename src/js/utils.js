@@ -193,7 +193,7 @@ export function getAllTasks() {
  */
 export function createTask(item) {
     chrome.alarms.create(item.url, {
-        delayInMinutes: TASK_DELAY,
+        delayInMinutes: 1,
         periodInMinutes: TASK_DELAY,
     });
 }
@@ -235,14 +235,15 @@ export function cleanTask() {
 
 /**
  * @param {Task} task
+ * @param {boolean} muteEqual
  */
-export async function fireTask(task) {
+export async function fireTask(task, muteEqual = true) {
     const trackingList = await getAllList();
     const config = trackingList.find(item => item.url === task.name);
 
     try {
         let res = await fetch(config.url, {
-            credentials: 'same-origin',
+            credentials: 'include',
         });
         res = await res.text();
         const doc = new DOMParser().parseFromString(res, 'text/html');
@@ -256,11 +257,19 @@ export async function fireTask(task) {
         let history = config.history || [];
         const lastPrice = history[history.length - 1];
 
-        if (!lastPrice || lastPrice.price !== price)
+        if (!lastPrice || lastPrice.price !== price) {
             history.push({
                 price: price,
                 time: task.scheduledTime,
             });
+            notify(
+                lastPrice.price < price ? 'plus' : 'minus',
+                config.title,
+                `${vnd(lastPrice.price)} => ${vnd(price)}\n${dt(task.scheduledTime)}`
+            );
+        } else {
+            if (!muteEqual) notify('empty', config.title, `${vnd(price)}\n${dt(task.scheduledTime)}`);
+        }
 
         if (history.length > 4) history = history.slice(history.length - 4);
 

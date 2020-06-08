@@ -29,10 +29,13 @@ document.addEventListener('click', e => {
         });
         e.target.closest('.row').remove();
     } else if (e.target.classList.contains('refresh-item')) {
-        utils.fireTask({
-            name: e.target.dataset.url,
-            scheduledTime: new Date().getTime(),
-        });
+        utils.fireTask(
+            {
+                name: e.target.dataset.url,
+                scheduledTime: new Date().getTime(),
+            },
+            false
+        );
     }
 });
 
