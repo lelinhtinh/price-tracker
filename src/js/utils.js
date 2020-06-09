@@ -244,8 +244,15 @@ export async function fireTask(task, muteEqual = true) {
     try {
         let res = await fetch(config.url, {
             credentials: 'include',
+            cache: 'no-cache',
+            referrer: config.url,
+            referrerPolicy: 'origin-when-cross-origin',
         });
+
         res = await res.text();
+        res = res.replace(/[\s\n]+src[\s\n]*=[\s\n]*/gi, ' data-src=');
+        res = res.replace(/^[^<]*/, '');
+
         const doc = new DOMParser().parseFromString(res, 'text/html');
 
         let price = doc.querySelector(config.selector);
