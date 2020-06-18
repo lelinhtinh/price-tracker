@@ -114,40 +114,51 @@ function renderTrackingList(list) {
 (async function () {
     const $formConfigs = document.querySelector('#formConfigs');
     const $listConfigs = document.querySelector('#listConfigs');
+    const $submitBtn = document.querySelector('#submitBtn');
     const $statusWrap = document.querySelector('#statusWrap');
 
-    function updated() {
-        $statusWrap.classList.remove('is-hidden');
-        setTimeout(() => {
-            $statusWrap.classList.add('is-hidden');
-        }, 3000);
+    function doNotLeave(e) {
+        e.preventDefault();
+        e.returnValue = '';
     }
 
     $formConfigs.addEventListener('submit', async e => {
         e.preventDefault();
 
+        window.addEventListener('beforeunload', doNotLeave);
+
+        await utils.cleanList();
+        await utils.cleanTask();
+
+        $trackingList.innerHTML = '';
+        $listConfigs.disabled = true;
+        $submitBtn.disabled = true;
+
         let data = $listConfigs.value.trim();
-        if (data === '') {
-            await utils.cleanList();
-        } else {
-            try {
-                data = JSON.parse(data);
-                // eslint-disable-next-line no-empty
-            } catch (error) {}
+        try {
+            data = JSON.parse(data);
+            // eslint-disable-next-line no-empty
+        } catch (error) {}
 
-            if (!Array.isArray(data)) return;
-            await utils.setList(data);
-        }
+        if (!Array.isArray(data)) return;
+        await utils.setList(data);
+        await utils.multiTask(data, count => {
+            $statusWrap.innerHTML = `<span class="count">${count}</span>`;
+        });
 
-        updated();
+        window.removeEventListener('beforeunload', doNotLeave);
+
+        $listConfigs.disabled = false;
+        $submitBtn.disabled = false;
+        $statusWrap.innerHTML = chrome.i18n.getMessage('updated');
+        setTimeout(() => {
+            $statusWrap.innerHTML = '';
+        }, 3000);
     });
 
     chrome.storage.onChanged.addListener(async changes => {
-        if (!changes.trackingList) return;
-
-        let newValue = changes.trackingList.newValue || [];
-        const oldValue = changes.trackingList.oldValue || [];
-        if (!newValue.length && oldValue.length > newValue) newValue = await utils.getAllList();
+        const newValue = await utils.getNewValue(changes);
+        if (!newValue.length) return;
 
         $listConfigs.value = JSON.stringify(newValue);
         renderTrackingList(newValue);

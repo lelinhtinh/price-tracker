@@ -15,9 +15,11 @@ chrome.runtime.onMessage.addListener(async message => {
     utils.notify('ok', message.data.title, message.data.url);
 });
 
-chrome.storage.onChanged.addListener(changes => {
-    const newValue = changes.trackingList ? changes.trackingList.newValue || [] : [];
-    if (newValue.length) updateTask(newValue);
+chrome.storage.onChanged.addListener(async changes => {
+    const newValue = await utils.getNewValue(changes);
+    if (!newValue.length) return;
+
+    updateTask(newValue);
 });
 
 /**
@@ -28,7 +30,8 @@ async function updateTask(currList) {
     allTasks.forEach(task => {
         if (currList.findIndex(item => task.name === item.url) !== -1) utils.removeTask(task);
     });
-    currList.forEach(utils.createTask);
+
+    await utils.multiTask(currList);
 }
 
 chrome.alarms.onAlarm.addListener(utils.fireTask);
@@ -42,5 +45,5 @@ chrome.alarms.onAlarm.addListener(utils.fireTask);
         await utils.cleanTask();
     }
 
-    allList.forEach(utils.createTask);
+    await utils.multiTask(allList);
 })();

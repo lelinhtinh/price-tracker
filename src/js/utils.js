@@ -16,21 +16,25 @@ export function notify(status, title, message) {
 }
 
 /**
+ * @param {chrome.storage.StorageChange} changes
+ */
+export async function getNewValue(changes) {
+    if (!changes.trackingList) return;
+
+    let newValue = changes.trackingList.newValue || [];
+    const oldValue = changes.trackingList.oldValue || [];
+    if (!newValue.length && oldValue.length > newValue) newValue = await getAllList();
+
+    return newValue;
+}
+
+/**
  * @param {string} str
  * @returns {boolean}
  */
 export function hasContent(str) {
     if (typeof str !== 'string') return false;
     return str.trim() !== '';
-}
-
-/**
- * @param {array|object} obj
- * @returns {void}
- */
-export function log(obj, name = null) {
-    if (typeof obj !== 'object') console.log(Object.create(obj), name ? name : typeof obj);
-    console.log(Object.create(obj), name ? name : 'object');
 }
 
 /**
@@ -129,7 +133,11 @@ export function getItem(item) {
             ['trackingList'],
             /** @param {Result} result */
             result => {
-                if (!result || !result.trackingList || !result.trackingList.length) resolve(null);
+                if (!result || !result.trackingList || !result.trackingList.length) {
+                    resolve(null);
+                    return;
+                }
+
                 resolve(result.trackingList.find(temp => temp.url === item.url));
             }
         );
@@ -146,10 +154,16 @@ export function removeItem(item) {
             ['trackingList'],
             /** @param {Result} result */
             async result => {
-                if (!result || !result.trackingList || !result.trackingList.length) resolve();
+                if (!result || !result.trackingList || !result.trackingList.length) {
+                    resolve();
+                    return;
+                }
 
                 const index = result.trackingList.findIndex(temp => temp.url === item.url);
-                if (index === -1) resolve();
+                if (index === -1) {
+                    resolve();
+                    return;
+                }
 
                 result.trackingList.splice(index, 1);
                 resolve(await setList(result.trackingList));
@@ -189,13 +203,20 @@ export function getAllTasks() {
 
 /**
  * @param {Item} item
- * @returns {void}
+ * @returns {boolean}
  */
-export function createTask(item) {
+export async function createTask(item) {
+    let allList = await getAllList();
+
+    const index = allList.findIndex(temp => temp.url === item.url);
+    if (index === -1) return false;
+
     chrome.alarms.create(item.url, {
         delayInMinutes: 1,
         periodInMinutes: TASK_DELAY,
     });
+
+    return true;
 }
 
 /**
@@ -230,6 +251,35 @@ export function cleanTask() {
         chrome.alarms.clearAll(() => {
             resolve();
         });
+    });
+}
+
+/**
+ * @param {Item[]} list
+ * @returns {void}
+ */
+export function multiTask(list, callback) {
+    return new Promise((resolve, reject) => {
+        (async function loop(_list) {
+            if (!_list.length) reject('Data is empty');
+
+            const newTask = await createTask(_list.pop());
+            if (typeof callback === 'function') callback(_list.length);
+
+            if (!_list.length) {
+                resolve();
+                return;
+            }
+
+            if (!newTask) {
+                loop(_list);
+                return;
+            }
+
+            setTimeout(() => {
+                loop(_list);
+            }, 2000);
+        })(list);
     });
 }
 

@@ -154,6 +154,11 @@ details summary::-webkit-details-marker {
     opacity: 1;
 }
 
-.button svg {
+.button svg,
+.button.clear {
     pointer-events: none;
+}
+
+.count {
+    color: orange;
 }

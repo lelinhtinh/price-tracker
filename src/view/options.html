@@ -24,10 +24,7 @@
         </nav>
     </header>
     <div class="container mt-5">
-        <div class="card">
-            <div id="trackingList"></div>
-        </div>
-        <details class="card mt-5">
+        <details class="card">
             <summary>
                 <label for="listConfigs" class="summary-title" data-i18n>configs</label>
                 <div class="summary-chevron-up">
@@ -41,8 +38,8 @@
             <form class="mb-0 summary-content" id="formConfigs">
                 <textarea rows="7" id="listConfigs"></textarea>
                 <div class="row mt-2">
-                    <div class="col mb-0 is-left is-hidden" id="statusWrap">
-                        <button class="button clear" data-i18n>updated</button>
+                    <div class="col mb-0 is-left">
+                        <button class="button clear" id="statusWrap"></button>
                     </div>
                     <div class="col mb-0 is-right">
                         <button type="submit" class="button primary" id="submitBtn" data-i18n>save</button>
@@ -57,6 +54,10 @@
                 </div>
             </form>
         </details>
+        <div class="card mt-5">
+            <div id="trackingList"></div>
+        </div>
+        <div class="mt-5"></div>
     </div>
 </body>
 <script type="module" src="/src/js/options.js"></script>
